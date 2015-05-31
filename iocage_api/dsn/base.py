@@ -1,3 +1,4 @@
+import malibu
 from malibu import configuration
 
 

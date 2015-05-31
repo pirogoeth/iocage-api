@@ -1,4 +1,4 @@
-import base, sentry
+from iocage_api.dsn import base, sentry
 
 DSN_HANDLERS = {
         'base'      : base.BaseDSNDriver,

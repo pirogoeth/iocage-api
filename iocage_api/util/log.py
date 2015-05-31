@@ -1,8 +1,12 @@
 import logging, malibu
 from malibu.config import configuration
+
 from iocage_api import util
 
+
 class LoggingDriver(object):
+
+    CONFIG_SECTION = "logging"
 
     __instance = None
 
@@ -36,6 +40,8 @@ class LoggingDriver(object):
         if not isinstance(self.__loglevel, int):
             raise TypeError("Invalid log level: {}".format(
                 self.__config.get_string("loglevel", "INFO").upper()))
+
+        LoggingDriver.__instance = self
 
         self.__setup_logger()
 
