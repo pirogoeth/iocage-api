@@ -36,11 +36,13 @@ class BaseDSNDriver(object):
 
         for key in config_keys + self.__needs_keys:
             if not self.__will_run: break
-            if key not in self.__config:
+            if key not in config:
                 print " --> Missing config key: {}".format(key)
                 print " --> Please add it to the [debug] section in the config"
                 self.__will_run = False
                 continue
+
+        self.__config = config
 
     def get_config(self):
         """ get_config(self)

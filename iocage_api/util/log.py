@@ -1,4 +1,5 @@
 import logging, malibu
+from logging import handlers
 from malibu.config import configuration
 
 from iocage_api import util
@@ -34,7 +35,7 @@ class LoggingDriver(object):
 
         self.__logfile = self.__config.get_string("logfile", "/var/log/iocage-api.log")
         self.__loglevel = self.__config.get_string("loglevel", "INFO").upper()
-        self.__stream = self.__config.get_boolean("console_log", True)
+        self.__stream = self.__config.get_bool("console_log", True)
 
         self.__loglevel = getattr(logging, self.__loglevel, None)
         if not isinstance(self.__loglevel, int):
@@ -52,11 +53,13 @@ class LoggingDriver(object):
             other streaming options.
         """
 
-        logger = logging.getLogger(__name__)
+        # Set up logging with the root handler so all log objects get the same
+        # configuration.
+        logger = logging.getLogger("")
 
-        formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s: %(message)s')
+        formatter = logging.Formatter('%(asctime)s | %(name)-12s %(levelname)-8s: %(message)s')
 
-        file_logger = logging.RotatingFileHandler(
+        file_logger = handlers.RotatingFileHandler(
                 self.__logfile,
                 maxBytes = 8388608, # 8MB
                 backupCount = 4)
@@ -66,11 +69,14 @@ class LoggingDriver(object):
         logger.addHandler(file_logger)
 
         if self.__stream:
+            logger.debug(" --> Building streaming log handler...")
             stream_logger = logging.StreamHandler()
             stream_logger.setLevel(self.__loglevel)
             stream_logger.setFormatter(formatter)
 
             logger.addHandler(stream_logger)
+
+        logger.info(" --> Logging is up!")
 
     def get_logger(self, name = None):
         """ get_logger(self, name = None)

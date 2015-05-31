@@ -9,7 +9,7 @@ class SentryDSNDriver(base.BaseDSNDriver):
 
     def __init__(self, app = None):
 
-        BaseDSNDriver.__init__(self, app)
+        base.BaseDSNDriver.__init__(self, app)
 
         self.__wrapper = None
 
@@ -35,7 +35,7 @@ class SentryDSNDriver(base.BaseDSNDriver):
         return self.__config.get_int("project_id", -1)
 
     def install(self):
-        """ insert(self)
+        """ install(self)
 
             Instantiates and installs the Raven DSN into the Bottle
             framework for error reporting to Sentry.
