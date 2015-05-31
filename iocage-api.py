@@ -108,7 +108,8 @@ class IOCageAPIManager(object):
 if __name__ == '__main__':
 
     manager = IOCageAPIManager()
-    log = manager.load_logging()
+    manager.load_logging()
+    log = log.LoggingDriver.get_logger(name = "iocage_api.__main__")
     log.info(" --> Loading Bottle server...")
     manager.load_bottle()
     log.info(" --> Loading DSN driver...")

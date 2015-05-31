@@ -19,6 +19,17 @@ class LoggingDriver(object):
 
         return LoggingDriver.__instance
 
+    @staticmethod
+    def get_logger(name = None):
+
+        if not LoggingDriver.get_instance():
+            return None
+        
+        if name is None:
+            name = util.get_caller()
+
+        return LoggingDriver.get_instance().__get_logger(name = name)
+    
     def __init__(self, config = {}):
         """ __init__(self, config = {})
 
@@ -55,8 +66,8 @@ class LoggingDriver(object):
 
         # Set up logging with the root handler so all log objects get the same
         # configuration.
-        logger = logging.getLogger("")
-
+        logger = logging.getLogger("iocage_api")
+        logger.setLevel(self.__loglevel)
         formatter = logging.Formatter('%(asctime)s | %(name)-12s %(levelname)-8s: %(message)s')
 
         file_logger = handlers.RotatingFileHandler(
@@ -76,9 +87,7 @@ class LoggingDriver(object):
 
             logger.addHandler(stream_logger)
 
-        logger.info(" --> Logging is up!")
-
-    def get_logger(self, name = None):
+    def __get_logger(self, name = None):
         """ get_logger(self, name = None)
 
             Will return a logger object for a specific namespace. 
