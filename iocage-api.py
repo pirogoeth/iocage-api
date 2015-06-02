@@ -64,11 +64,9 @@ class IOCageAPIManager(object):
         if not dsn_class:
             return None
 
-        dsn_inst = dsn_class(self.__app)
-        dsn_inst.set_config(config = dsn_config)
-        dsn_inst.install()
-
-        self.__dsn = dsn_inst
+        self.__dsn = dsn_class(self.__app)
+        self.__dsn.set_config(config = dsn_config)
+        self.__dsn.install()
 
         return self.__dsn
 
@@ -92,7 +90,7 @@ class IOCageAPIManager(object):
         """
 
         if not self.__app:
-            return
+            return Exception("Bottle server has not been instantiated.")
 
         bottle_config = self.__config.get_section("api")
 
@@ -105,6 +103,25 @@ class IOCageAPIManager(object):
                     debug = True)
             return
 
+    @property
+    def app(self):
+        """ property app(self)
+
+            Return app instance.
+        """
+
+        return self.__app
+    
+    @property
+    def dsn(self):
+        """ property dsn(self)
+
+            Return DSN instance.
+        """
+
+        return self.__dsn
+
+
 if __name__ == '__main__':
 
     manager = IOCageAPIManager()
@@ -115,4 +132,7 @@ if __name__ == '__main__':
     log.info(" --> Loading DSN driver...")
     manager.load_dsn()
     log.info(" --> Running Bottle server!")
-    manager.run_bottle()
+    try:
+        manager.run_bottle()
+    except:
+        manager.dsn.client.captureException()

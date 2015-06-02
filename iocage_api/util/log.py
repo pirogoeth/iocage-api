@@ -68,7 +68,7 @@ class LoggingDriver(object):
         # configuration.
         logger = logging.getLogger("iocage_api")
         logger.setLevel(self.__loglevel)
-        formatter = logging.Formatter('%(asctime)s | %(name)-12s %(levelname)-8s: %(message)s')
+        formatter = logging.Formatter('%(asctime)s | %(name)-50s %(levelname)s : %(message)s')
 
         file_logger = handlers.RotatingFileHandler(
                 self.__logfile,

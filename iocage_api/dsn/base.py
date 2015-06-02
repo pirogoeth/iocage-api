@@ -1,6 +1,8 @@
 import malibu
 from malibu import configuration
 
+from iocage_api.util import log
+
 
 class BaseDSNDriver(object):
     """ This class represents a bare DSN driver.
@@ -17,6 +19,8 @@ class BaseDSNDriver(object):
         self.__app = app
         self.__config = {}
         self.__client = None
+
+        self.__logger = log.LoggingDriver.get_logger()
 
         self.__will_run = True
         self.__needs_keys = []
@@ -68,6 +72,32 @@ class BaseDSNDriver(object):
 
         return self.__app
 
+    def set_client(self, client = None):
+        """ set_client(self)
+
+            Allows subclasses to set the client instance.
+        """
+
+        self.__client = client
+
+    def connect(self):
+        """ connect(self)
+
+            Connects the DSN client to the DSN.
+        """
+
+        pass
+    
+    def install(self):
+        """ install(self)
+
+            Installs the DSN object into the Bottle application to collect
+            logs and do the forwarding.
+        """
+        
+        if not self.__client or not self.__will_run: return False
+        else: return True
+    
     @property
     def enabled(self):
         """ property enabled(self)
@@ -76,15 +106,6 @@ class BaseDSNDriver(object):
         """
 
         return self.__config.get_bool("enabled", True)
-
-    @property
-    def url(self):
-        """ property url(self)
-
-            Represents the configured DSN url for the driver.
-        """
-
-        return self.__config.get_string("url", "")
 
     @property
     def public_key(self):
@@ -106,12 +127,20 @@ class BaseDSNDriver(object):
 
         return self.__config.get_string("secret_key", "")
 
-    def install(self):
-        """ install(self)
+    @property
+    def url(self):
+        """ property url(self)
 
-            Installs the DSN object into the Bottle application to collect
-            logs and do the forwarding.
+            Represents the configured DSN url for the driver.
         """
 
-        if not self.__client or not self.__will_run: return False
-        else: return True
+        return self.__config.get_string("url", "")
+
+    @property
+    def will_run(self):
+        """ property will_run(self)
+
+            Represents the value of __will_run
+        """
+
+        return self.__will_run
