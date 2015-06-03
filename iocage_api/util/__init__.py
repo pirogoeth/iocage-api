@@ -1,6 +1,5 @@
 import inspect
 
-
 def get_caller():
 
     frame = inspect.currentframe()
@@ -10,11 +9,10 @@ def get_caller():
     
     if 'self' in caller.f_locals:
         caller_class = caller.f_locals['self'].__class__.__name__
-        caller_module = caller.f_locals['self'].__class__.__module__
     else:
         caller_class = None
-        caller_module = None
     
+    caller_module = inspect.getmodule(caller).__name__
     caller_name = callerinfo[2]
     
     if caller_class:
