@@ -1,8 +1,10 @@
 import logging, malibu
-from logging import handlers
-from malibu.config import configuration
 
 from iocage_api import util
+
+from logging import handlers
+
+from malibu.config import configuration
 
 
 class LoggingDriver(object):

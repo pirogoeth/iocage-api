@@ -1,7 +1,8 @@
-import malibu
-from malibu import configuration
+import iocage_api, malibu
 
 from iocage_api.util import log
+
+from malibu import configuration
 
 
 class BaseDSNDriver(object):

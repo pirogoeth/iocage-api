@@ -31,6 +31,7 @@ def generate_bare_response():
 
     return response
 
+
 def generate_error_response(exception = None):
     """ generate_error_response(exception = None)
 
@@ -52,6 +53,7 @@ def generate_error_response(exception = None):
         response.update({"exception" : str(exception)})
 
     return response
+
 
 class APIRouter(object):
 
