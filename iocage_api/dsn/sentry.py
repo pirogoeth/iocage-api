@@ -16,7 +16,33 @@ class SentryDSNDriver(base.BaseDSNDriver):
         self.__wrapper = None
         self.__logger = log.LoggingDriver.get_logger()
 
-        self.__needs_keys = ["project_id"]
+        self.__needs_keys = ["path", "project_id"]
+
+    def __build_dsn_url(self):
+        """ __build_dsn_url(self)
+
+            Takes the known components from the configuration
+            and builds a functional DSN URL for using with Raven
+            to connect to Sentry.
+
+            A DSN URL is in the following format:
+
+              {protocol}://{public_key}:{secret_key}@{host}/{path}{project_id}
+        """
+
+        path = self.path if len(self.path) > 1 and self.path is not "/" else ""
+
+        components = {
+                "protocol"   : self.__base.protocol,
+                "public_key" : self.__base.public_key,
+                "secret_key" : self.__base.secret_key,
+                "host"       : self.__base.host,
+                "path"       : path,
+                "project_id" : self.project_id,
+        }
+
+        return "{protocol}://{public_key}:{secret_key}@{host}" \
+               "/{path}{project_id}".format(**components)
 
     def set_config(self, config = {}):
         """ set_config(self)
@@ -31,6 +57,7 @@ class SentryDSNDriver(base.BaseDSNDriver):
             self.__config = config
 
         if self.will_run:
+            self.__url = self.__build_dsn_url()
             self.connect()
 
     def get_bottle_wrapper(self):
@@ -53,13 +80,14 @@ class SentryDSNDriver(base.BaseDSNDriver):
         
         try:
             self.__client = raven.Client(
-                    dsn = self.__base.url,
+                    dsn = self.__url,
                     public_key = self.__base.public_key,
                     secret_key = self.__base.secret_key,
                     project = self.project_id,
                     site_name = site_name)
             self.__base.set_client(self.__client)
-            self.__logger.info("Connected to Sentry DSN.")
+            masked = self.__url.replace(self.__base.secret_key, '****')
+            self.__logger.info("Connected to Sentry DSN: %s." % (masked))
         except Exception as e:
             self.__will_run = False
             self.__logger.error(" --> Encountered Exception while connecting DSN:")
@@ -89,16 +117,6 @@ class SentryDSNDriver(base.BaseDSNDriver):
         return True
     
     @property
-    def project_id(self):
-        """ property project_id(self)
-
-            Represents the configured project id to log events 
-            to in the DSN.
-        """
-
-        return self.__config.get_int("project_id", -1)
-
-    @property
     def client(self):
         """ property client(base)
 
@@ -108,3 +126,23 @@ class SentryDSNDriver(base.BaseDSNDriver):
         """
 
         return self.__base.get_client()
+    
+    @property
+    def path(self):
+        """ property path(self)
+
+            Represents the configured path to Sentry, if it
+            is not located at the HTTP root.
+        """
+
+        return self.__config.get_string("path", "/")
+    
+    @property
+    def project_id(self):
+        """ property project_id(self)
+
+            Represents the configured project id to log events 
+            to in the DSN.
+        """
+
+        return self.__config.get_int("project_id", -1)

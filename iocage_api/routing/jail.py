@@ -64,6 +64,55 @@ class JailAPIRouter(base.APIRouter):
         else:
             response["jails"] = jail_list
 
-        yield json.dumps(response)
+        yield json.dumps(response) + "\n"
+
+    @api_route(path = "/jail/<id>", actions = ["GET"])
+    def jail_show(id):
+        """ GET /jail/<id>
+
+            Returns all known information about a jail.
+        """
+
+        config = manager.IOCageAPIManager.get_instance().config
+
+        iocage_conf = config.get_section("iocage")
+        zfs = ZFSConnection()
+        zfs.load_properties(zfs.pools)
+
+        try: pool = zfs.pools.lookup(iocage_conf.get_string("zfs_pool", "root"))
+        except Exception as e:
+            yield json.dumps(base.generate_error_response(e))
+            raise
+
+        try: iocage = pool.lookup(iocage_conf.get_string("path", "iocage"))
+        except Exception as e:
+            yield json.dumps(base.generate_error_response(e))
+            raise
+
+        try: jails = iocage.lookup("jails")
+        except Exception as e:
+            yield json.dumps(base.generate_error_response(e))
+            raise
+
+        try: jail = jails.lookup(id)
+        except Exception as e:
+            yield json.dumps(base.generate_error_response(e))
+            raise
+
+        response = base.generate_bare_response()
+        response.update({"jails": []})
+        response.update({"jaildata": {}})
+        response['jails'].append(jail.name)
+
+        zfs_props = {k: v for k, v in jail.properties.iteritems()
+                if not k.startswith("org.freebsd.iocage")}
+        iocage_props = {k[19:]: v for k, v in jail.properties.iteritems() 
+                if k.startswith("org.freebsd.iocage")}
+
+        response['jaildata'].update({jail.name: {}})
+        response['jaildata'][jail.name].update({"zfs": zfs_props})
+        response['jaildata'][jail.name].update({"iocage": iocage_props})
+
+        yield json.dumps(response) + "\n"
 
 register_route_providers = [JailAPIRouter]

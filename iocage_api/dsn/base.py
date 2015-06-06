@@ -36,7 +36,8 @@ class BaseDSNDriver(object):
               driver.set_config(config.get_section(driver.CONFIG_SECTION))
         """
 
-        config_keys = ["enabled", "url", "public_key", "secret_key"]
+        config_keys = ["enabled", "host", "protocol", "public_key",
+                "secret_key"]
 
         for key in config_keys + self.__needs_keys:
             if not self.__will_run: break
@@ -108,6 +109,24 @@ class BaseDSNDriver(object):
         return self.__config.get_bool("enabled", True)
 
     @property
+    def host(self):
+        """ property host(self)
+
+            Represents the address of the DSN host we will connect to.
+        """
+
+        return self.__config.get_string("host", "")
+
+    @property
+    def protocol(self):
+        """ property protocol(self)
+
+            Represents the connection protocol of the DSN client.
+        """
+
+        return self.__config.get_string("protocol", "http")
+
+    @property
     def public_key(self):
         """ property public_key(self)
 
@@ -126,15 +145,6 @@ class BaseDSNDriver(object):
         """
 
         return self.__config.get_string("secret_key", "")
-
-    @property
-    def url(self):
-        """ property url(self)
-
-            Represents the configured DSN url for the driver.
-        """
-
-        return self.__config.get_string("url", "")
 
     @property
     def will_run(self):

@@ -1,4 +1,6 @@
 bottle==0.12.8
+eventlet==0.17.4
+greenlet==0.4.7
 malibu==0.1.2.post1
 raven==5.3.1
-
+-e git+git@github.com:pirogoeth/zfsapi.git@873292cd3da04fbde053e0a928bf0361c5d47d22#egg=zfsapi-master
