@@ -1,7 +1,6 @@
 import malibu, sys, traceback
 from malibu.config import configuration
-
-from iocage_api.util import log
+from malibu.util import log
 
 
 def api_route(path = "", actions = []):
@@ -43,7 +42,7 @@ def generate_error_response(exception = None):
     """
 
     response = {"status" : 500, "stacktrace" : {}}
-    
+
     traceback_pos = 0
     for trace in traceback.extract_tb(sys.exc_info[2], 4):
         response['stacktrace'].update({traceback_pos : ' '.join(trace)})
@@ -60,7 +59,7 @@ class APIRouter(object):
     def __init__(self, manager):
 
         self.__log = log.LoggingDriver.get_logger()
-        
+
         self.manager = manager
         self.app = self.manager.app
 

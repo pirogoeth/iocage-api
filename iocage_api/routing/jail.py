@@ -7,6 +7,7 @@ from iocage_api.routing import base
 from iocage_api.routing.base import api_route
 
 from malibu.config import configuration
+from malibu.util import log
 
 from zfsapi.connection import ZFSConnection
 
@@ -49,7 +50,7 @@ class JailAPIRouter(base.APIRouter):
 
         response = base.generate_bare_response()
         response.update({"jails" : {}})
-        
+
         if "detailed" in request.query:
             for jail in jail_list:
                 zjail = jails.lookup(jail)

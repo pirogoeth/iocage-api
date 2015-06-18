@@ -1,6 +1,6 @@
-import iocage_api, malibu
-
-from iocage_api.util import log
+import malibu
+from malibu import configuration
+from malibu.util import log
 
 from malibu import configuration
 

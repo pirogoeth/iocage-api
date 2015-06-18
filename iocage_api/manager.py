@@ -3,10 +3,9 @@ import bottle, iocage_api, malibu, sys
 from bottle import Bottle, redirect, request, route, run
 
 from malibu.config import configuration
-from malibu.util import args
+from malibu.util import args, log
 
 from iocage_api import dsn, routing, util
-from iocage_api.util import log
 
 
 class IOCageAPIManager(object):

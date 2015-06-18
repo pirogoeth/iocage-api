@@ -3,9 +3,9 @@ import malibu, raven
 from raven.contrib.bottle import Sentry
 
 from malibu import configuration
+from malibu.util import log
 
 from iocage_api.dsn import base
-from iocage_api.util import log
 
 
 class SentryDSNDriver(base.BaseDSNDriver):
